@@ -1,7 +1,8 @@
 /**
-* @file jQuery collection plugin that implements one-dimensional keyboard navigation
+* @file jQuery collection plugin that implements the input and model for
+* one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.0.1
+* @version 0.0.2
 * @requires jquery
 * @requires jquery-common-keydown
 */
@@ -10,7 +11,7 @@
 
     /**
     * @method "jQuery.fn.linearNavigation"
-    * @param {Object} delegateEl - delegate key events to this element
+    * @param {Object} itemsSelector - collection of navigable elements
     * @param {Object} [options]
     * @param {string} [options.axis] - set arrow key axis to x, y or both (default: both)
     * @param {boolean} [options.wrap] - keyboard focus wraps from last to first & vice versa (default: true)
@@ -20,94 +21,96 @@
     * @fires linearNavigationChange - when the current item changes
     * @return {Object} chainable jQuery class
     */
-    $.fn.linearNavigation = function linearNavigation(delegateEl, options) {
+    $.fn.linearNavigation = function linearNavigation(itemsSelector, options) {
         options = $.extend({
             activeIndex: 0,
             clickable: true,
-            clickDelegate: delegateEl,
+            clickDelegate: this,
             axis: 'both',
             wrap: true
         }, options);
 
-        if ($.data(delegateEl, pluginName) === undefined) {
-            var $collection = $(this);
+        return this.each(function onEachMatchedEl() {
+            var $this = $(this);
+            var $collection = $this.find(itemsSelector);
             var numItems = $collection.length;
-            var $delegateEl = $(delegateEl);
-            var $clickDelegate = $(options.clickDelegate);
-            var currentItemIndex = options.activeIndex;
 
-            var updateModel = function(goToIndex) {
-                $delegateEl.trigger("linearNavigationChange", {fromIndex: currentItemIndex, toIndex: goToIndex});
+            if ($.data(this, pluginName) === undefined) {
+                var $clickDelegate = $(options.clickDelegate);
+                var currentItemIndex = options.activeIndex;
 
-                currentItemIndex = goToIndex;
-            };
+                var updateModel = function(goToIndex) {
+                    $this.trigger("linearNavigationChange", {fromIndex: currentItemIndex, toIndex: goToIndex});
 
-            var goToNextItem = function(e) {
-                var isOnLastEl = (currentItemIndex === jQuery.data(delegateEl, pluginName).length - 1);
-                var goToIndex;
+                    currentItemIndex = goToIndex;
+                };
 
-                if (isOnLastEl) {
-                    if (options.wrap === true) {
-                        goToIndex = 0;
+                var goToNextItem = function(e) {
+                    var isOnLastEl = (currentItemIndex === jQuery.data(this, pluginName).length - 1);
+                    var goToIndex;
+
+                    if (isOnLastEl) {
+                        if (options.wrap === true) {
+                            goToIndex = 0;
+                        }
+                    } else {
+                        goToIndex = currentItemIndex + 1;
                     }
-                } else {
-                    goToIndex = currentItemIndex + 1;
+
+                    updateModel(goToIndex);
+                };
+
+                var goToPrevItem = function(e) {
+                    var isOnFirstEl = (currentItemIndex === 0 || currentItemIndex === -1);
+                    var goToIndex;
+
+                    if (isOnFirstEl) {
+                        if (options.wrap === true) {
+                            goToIndex = jQuery.data(this, pluginName).length - 1;
+                        }
+                    } else {
+                        goToIndex = currentItemIndex - 1;
+                    }
+
+                    updateModel(goToIndex);
+                };
+
+                // ensure item index is not out of bounds
+                if (currentItemIndex >= numItems) {
+                    currentItemIndex = 0;
                 }
 
-                updateModel(goToIndex);
-            };
+                // install commonKeyDown plugin on main delegate element
+                $this.commonKeyDown($collection);
 
-            var goToPrevItem = function(e) {
-                var isOnFirstEl = (currentItemIndex === 0 || currentItemIndex === -1);
-                var goToIndex;
-
-                if (isOnFirstEl) {
-                    if (options.wrap === true) {
-                        goToIndex = jQuery.data(delegateEl, pluginName).length - 1;
-                    }
+                // handle arrow keys
+                if (options.axis === 'x') {
+                    $this.on('leftArrowKeyDown', goToPrevItem);
+                    $this.on('rightArrowKeyDown', goToNextItem);
+                } else if (options.axis === 'y') {
+                    $this.on('upArrowKeyDown', goToPrevItem);
+                    $this.on('downArrowKeyDown', goToNextItem);
                 } else {
-                    goToIndex = currentItemIndex - 1;
+                    $this.on('leftArrowKeyDown upArrowKeyDown', goToPrevItem);
+                    $this.on('rightArrowKeyDown downArrowKeyDown', goToNextItem);
                 }
 
-                updateModel(goToIndex);
-            };
+                // listen for click events on the click delegate
+                $clickDelegate.on('click', function(e) {
+                    updateModel($(e.target).data(pluginName).idx);
+                });
 
-            // ensure item index is not out of bounds
-            if (currentItemIndex >= numItems) {
-                currentItemIndex = 0;
-            }
-
-            // install commonKeyDown plugin on main delegate element
-            $delegateEl.commonKeyDown();
-
-            // handle arrow keys
-            if (options.axis === 'x') {
-                $delegateEl.on('leftArrowKeyDown', goToPrevItem);
-                $delegateEl.on('rightArrowKeyDown', goToNextItem);
-            } else if (options.axis === 'y') {
-                $delegateEl.on('upArrowKeyDown', goToPrevItem);
-                $delegateEl.on('downArrowKeyDown', goToNextItem);
+                // store data on delegate element
+                jQuery.data(this, pluginName, {installed: 'true', length: numItems});
             } else {
-                $delegateEl.on('leftArrowKeyDown upArrowKeyDown', goToPrevItem);
-                $delegateEl.on('rightArrowKeyDown downArrowKeyDown', goToNextItem);
+                // if plugin gets called again, update number of items
+                jQuery.data(this, pluginName).length = numItems;
             }
 
-            // listen for click events on the click delegate
-            $clickDelegate.on('click', function(e) {
-                updateModel($(e.target).data(pluginName).idx);
+            $collection.each(function onEachMatchedEl(index) {
+                // store index position on each collection item
+                $(this).data(pluginName, {idx: index});
             });
-
-            // store data on delegate element
-            jQuery.data(delegateEl, pluginName, {installed: 'true', length: numItems});
-
-        } else {
-            // if plugin gets called again, update number of items
-            jQuery.data(delegateEl, pluginName).length = $(this).length;
-        }
-
-        return this.each(function onEachMatchedEl(index) {
-            // store index position on each collection item
-            $(this).data(pluginName, {idx: index});
         });
     };
 }(jQuery, window, document));

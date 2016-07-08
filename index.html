@@ -32,7 +32,7 @@
         <script src="jquery.linearnavigation.js"></script>
         <script>
             $(function() {
-                $(".widget li").linearNavigation($('.widget'));
+                $(".widget").linearNavigation('li');
 
                 $(".widget").on('linearNavigationChange', function(e, data) {
                     console.log(e.type, e, data);
@@ -42,7 +42,7 @@
                 $('button#append-items').on('click', function() {
                     $('.widget ul').append('<li role="option">Option n</li>');
                     $(".widget").trigger('activeDescendantItemsChange');
-                    $(".widget li").linearNavigation($('.widget'));
+                    $(".widget").linearNavigation('li');
                 })
             });
         </script>
