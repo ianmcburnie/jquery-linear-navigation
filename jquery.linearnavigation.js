@@ -2,7 +2,7 @@
 * @file jQuery collection plugin that implements the input and model for
 * one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.0.2
+* @version 0.0.3
 * @requires jquery
 * @requires jquery-common-keydown
 */
@@ -47,7 +47,7 @@
 
                 var goToNextItem = function(e) {
                     var isOnLastEl = (currentItemIndex === jQuery.data(this, pluginName).length - 1);
-                    var goToIndex;
+                    var goToIndex = currentItemIndex;
 
                     if (isOnLastEl) {
                         if (options.wrap === true) {
@@ -62,7 +62,7 @@
 
                 var goToPrevItem = function(e) {
                     var isOnFirstEl = (currentItemIndex === 0 || currentItemIndex === -1);
-                    var goToIndex;
+                    var goToIndex = currentItemIndex;
 
                     if (isOnFirstEl) {
                         if (options.wrap === true) {
@@ -96,8 +96,8 @@
                 }
 
                 // listen for click events on the click delegate
-                $clickDelegate.on('click', function(e) {
-                    updateModel($(e.target).data(pluginName).idx);
+                $clickDelegate.on('click', itemsSelector, function(e) {
+                    updateModel($(e.currentTarget).data(pluginName).idx);
                 });
 
                 // store data on delegate element
