@@ -2,7 +2,7 @@
 * @file jQuery collection plugin that implements the input and model for
 * one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.0.3
+* @version 0.0.4
 * @requires jquery
 * @requires jquery-common-keydown
 */
@@ -46,7 +46,7 @@
                 };
 
                 var goToNextItem = function(e) {
-                    var isOnLastEl = (currentItemIndex === jQuery.data(this, pluginName).length - 1);
+                    var isOnLastEl = (currentItemIndex === jQuery.data(e.delegateTarget, pluginName).length - 1);
                     var goToIndex = currentItemIndex;
 
                     if (isOnLastEl) {
@@ -66,7 +66,7 @@
 
                     if (isOnFirstEl) {
                         if (options.wrap === true) {
-                            goToIndex = jQuery.data(this, pluginName).length - 1;
+                            goToIndex = jQuery.data(e.delegateTarget, pluginName).length - 1;
                         }
                     } else {
                         goToIndex = currentItemIndex - 1;
@@ -81,7 +81,7 @@
                 }
 
                 // install commonKeyDown plugin on main delegate element
-                $this.commonKeyDown($collection);
+                $this.commonKeyDown();
 
                 // handle arrow keys
                 if (options.axis === 'x') {
@@ -95,9 +95,9 @@
                     $this.on('rightArrowKeyDown downArrowKeyDown', goToNextItem);
                 }
 
-                // listen for click events on the click delegate
+                // delegate item click events, event bound to each item
                 $clickDelegate.on('click', itemsSelector, function(e) {
-                    updateModel($(e.currentTarget).data(pluginName).idx);
+                    updateModel($(this).data(pluginName).idx);
                 });
 
                 // store data on delegate element

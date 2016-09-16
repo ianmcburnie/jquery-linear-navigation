@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <title>Demo: jquery-linear-navigation</title>
+        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <style>
             textarea {
@@ -41,7 +42,7 @@
 
                 $('button#append-items').on('click', function() {
                     $('.widget ul').append('<li role="option">Option n</li>');
-                    $(".widget").trigger('activeDescendantItemsChange');
+                    // re-instate plugin
                     $(".widget").linearNavigation('li');
                 })
             });
