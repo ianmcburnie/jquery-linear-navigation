@@ -5,6 +5,21 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <style>
+            body {
+                margin: 0;
+            }
+            #eyebrow {
+                background-color: #333;
+                color: #eee;
+                padding: 10px;
+            }
+            #readme {
+                background-color: #eee;
+                padding: 10px;
+            }
+            #examples {
+                padding: 10px;
+            }
             textarea {
                 display: block;
                 width: 100%;
@@ -13,35 +28,45 @@
     </head>
     <body>
         <div role="main">
-            <h1>Demo: jquery-linear-navigation</h1>
-            <p>Set focus on list, then use ARROW keys. This plugin does not do any focus management, it only handles state, and triggers an event on state change.</p>
-            <div class="widget" tabindex="0">
-                <ul>
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                </ul>
-            </div>
-
-            <textarea readonly disabled></textarea>
-
-            <button id="append-items">Append New Items</button>
+            <header id="eyebrow">
+                <h1>Demo: jquery-linear-navigation</h1>
+            </header>
+            <section id="readme">
+                <p>Set focus on a list, then use ARROW keys. This plugin does not do any focus management, it only handles state, and triggers an event on state change.</p>
+                <p>This plugin consolidates common functionality and state of jquery-roving-tabindex and jquery-active-descendant. You probably don't need to use this plugin directly.</p>
+                <p>NOTE: This plugin does not require that keyboard focus go on the container of the items, it can go on any focusable element.</p>
+            </section>
+            <section id="examples">
+                <div class="widget" tabindex="0">
+                    <ul>
+                        <li>Item 1</li>
+                        <li>Item 2</li>
+                        <li>Item 3</li>
+                    </ul>
+                </div>
+                <textarea readonly disabled></textarea>
+                <button id="append-items">Append New Items</button>
+            </section>
         </div>
-
         <script src="browser.js"></script>
         <script>
             $(function() {
-                $(".widget").linearNavigation('li');
+                var pluginOptions = {
+                    debug: true,
+                    autoInit: false,
+                    autoReset: false
+                };
 
-                $(".widget").on('linearNavigationChange', function(e, data) {
+                $(".widget").linearNavigation('li', pluginOptions);
+
+                $(".widget").on('linearNavigationInit linearNavigationChange linearNavigationReset', 'li', function(e, data) {
                     console.log(e.type, e, data);
                     $('textarea').text(e.type + ' ' + JSON.stringify(data));
                 });
 
                 $('button#append-items').on('click', function() {
                     $('.widget ul').append('<li role="option">Option n</li>');
-                    // re-instate plugin
-                    $(".widget").linearNavigation('li');
+                    $(".widget").trigger('linearNavigationItemsChange');
                 })
             });
         </script>
