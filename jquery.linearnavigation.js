@@ -1,7 +1,7 @@
 /**
 * @file jQuery collection plugin that implements the events and model for one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.1.2
+* @version 0.1.3
 * @requires jquery
 * @requires jquery-common-keydown
 * @requires jquery-focus-exit
@@ -68,7 +68,8 @@
                     }
                 };
 
-                var onFocusExit = function() {
+                var onFocusExit = function(e) {
+                    e.stopPropagation();
                     if (currentItemIndex !== null) {
                         if (options.autoInit === false) {
                             resetModel();
