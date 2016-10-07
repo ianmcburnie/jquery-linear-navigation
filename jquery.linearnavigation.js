@@ -1,7 +1,7 @@
 /**
 * @file jQuery collection plugin that implements the events and model for one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.1.0
+* @version 0.1.1
 * @requires jquery
 * @requires jquery-common-keydown
 * @requires jquery-focus-exit
@@ -96,9 +96,10 @@
                 };
 
                 var onKeyNext = function(e) {
+                    var isShiftKeyDown = e.originalEvent.shiftKey;
                     if (needsInit() === true) {
                         initModel();
-                    } else {
+                    } else if (isShiftKeyDown === false) {
                         var isOnLastEl = (currentItemIndex === jQuery.data(e.delegateTarget, pluginName).length - 1);
                         var goToIndex = currentItemIndex;
 
@@ -117,9 +118,10 @@
                 };
 
                 var onKeyPrevious = function(e) {
+                    var isShiftKeyDown = e.originalEvent.shiftKey;
                     if (needsInit() === true) {
                         initModel();
-                    } else {
+                    } else if (isShiftKeyDown === false) {
                         var isOnFirstEl = currentItemIndex === 0;
                         var goToIndex = currentItemIndex;
 
