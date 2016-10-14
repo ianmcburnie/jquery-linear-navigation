@@ -1,7 +1,7 @@
 /**
 * @file jQuery collection plugin that implements the events and model for one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.1.3
+* @version 0.2.0
 * @requires jquery
 * @requires jquery-common-keydown
 * @requires jquery-focus-exit
@@ -17,7 +17,7 @@
     * @param {string} [options.activeIndex] - specify the initial active item by index position (default: 0)
     * @param {string} [options.autoInit] - reset the model when focus is lost (default: false)
     * @param {string} [options.autoReset] - reset the model when focus is lost (default: false)
-    * @param {boolean} [options.wrap] - keyboard focus wraps from last to first & vice versa (default: true)
+    * @param {boolean} [options.autoWrap] - keyboard focus wraps from last to first & vice versa (default: false)
     * @fires linearNavigationChange - when the current item changes
     * @fires linearNavigationReset - when the model resets
     * @fires linearNavigationInit - when the model inits
@@ -31,7 +31,7 @@
             debug: false,
             autoReset: false,
             autoInit: false,
-            wrap: true
+            autoWrap: false
         }, options);
 
         return this.each(function onEachMatchedEl() {
@@ -107,7 +107,7 @@
                         if (currentItemIndex === null) {
                             goToIndex = options.activeIndex;
                         } else if (isOnLastEl) {
-                            if (options.wrap === true) {
+                            if (options.autoWrap === true) {
                                 goToIndex = 0;
                             }
                         } else {
@@ -129,7 +129,7 @@
                         if (currentItemIndex === null) {
                             goToIndex = options.activeIndex;
                         } else if (isOnFirstEl) {
-                            if (options.wrap === true) {
+                            if (options.autoWrap === true) {
                                 goToIndex = jQuery.data(e.delegateTarget, pluginName).length - 1;
                             }
                         } else {
