@@ -1,7 +1,7 @@
 /**
 * @file jQuery collection plugin that implements the events and model for one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.2.0
+* @version 0.2.1
 * @requires jquery
 * @requires jquery-common-keydown
 * @requires jquery-focus-exit
@@ -15,9 +15,10 @@
     * @param {Object} [options]
     * @param {string} [options.axis] - set arrow key axis to x, y or both (default: both)
     * @param {string} [options.activeIndex] - specify the initial active item by index position (default: 0)
-    * @param {string} [options.autoInit] - reset the model when focus is lost (default: false)
+    * @param {string} [options.autoInit] - initialise the model before a key is pressed (default: false)
     * @param {string} [options.autoReset] - reset the model when focus is lost (default: false)
     * @param {boolean} [options.autoWrap] - keyboard focus wraps from last to first & vice versa (default: false)
+    * @param {boolean} [options.disableHomeAndEndKeys] - disable HOME and END key functionality (default: false)
     * @fires linearNavigationChange - when the current item changes
     * @fires linearNavigationReset - when the model resets
     * @fires linearNavigationInit - when the model inits
@@ -28,10 +29,11 @@
         options = $.extend({
             activeIndex: 0,
             axis: 'both',
-            debug: false,
             autoReset: false,
             autoInit: false,
-            autoWrap: false
+            autoWrap: false,
+            debug: false,
+            disableHomeAndEndKeys: false
         }, options);
 
         return this.each(function onEachMatchedEl() {
@@ -88,7 +90,8 @@
 
                 var onLinearNavigationItemsChange = function() {
                     $collection = $widget.find(itemsSelector);
-                    $.data(this, pluginName).length = $collection.length;
+                    numItems = $collection.length;
+                    $.data(this, pluginName).length = numItems;
                     storeData();
                 };
 
@@ -98,7 +101,7 @@
 
                 var onKeyNext = function(e) {
                     var isShiftKeyDown = e.originalEvent ? e.originalEvent.shiftKey : false;
-                    if (needsInit() === true) {
+                    if (needsInit()) {
                         initModel();
                     } else if (isShiftKeyDown === false) {
                         var isOnLastEl = (currentItemIndex === jQuery.data(e.delegateTarget, pluginName).length - 1);
@@ -120,7 +123,7 @@
 
                 var onKeyPrevious = function(e) {
                     var isShiftKeyDown = e.originalEvent ? e.originalEvent.shiftKey : false;
-                    if (needsInit() === true) {
+                    if (needsInit()) {
                         initModel();
                     } else if (isShiftKeyDown === false) {
                         var isOnFirstEl = currentItemIndex === 0;
@@ -140,6 +143,18 @@
                     }
                 };
 
+                var onHomeKey = function(e) {
+                    if (hasDoneInit()) {
+                        updateModel(0);
+                    }
+                };
+
+                var onEndKey = function(e) {
+                    if (hasDoneInit()) {
+                        updateModel(numItems - 1);
+                    }
+                };
+
                 // install commonKeyDown plugin on main delegate element
                 $widget.commonKeyDown();
 
@@ -153,6 +168,11 @@
                 } else {
                     $widget.on('leftArrowKeyDown upArrowKeyDown', onKeyPrevious);
                     $widget.on('rightArrowKeyDown downArrowKeyDown', onKeyNext);
+                }
+
+                if (options.disableHomeAndEndKeys === false) {
+                    $widget.on('homeKeyDown', onHomeKey);
+                    $widget.on('endKeyDown', onEndKey);
                 }
 
                 // delegate item click events, event bound to each item

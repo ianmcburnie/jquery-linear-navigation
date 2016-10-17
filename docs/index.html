@@ -32,16 +32,16 @@
                 <h1>Demo: jquery-linear-navigation</h1>
             </header>
             <section id="readme">
-                <p>Set focus on a list, then use ARROW keys. This plugin does not do any focus management, it only handles state, and triggers an event on state change. Autowrap is set to false by default.</p>
+                <p>Set focus on dummy widget, then use ARROW keys to update model. This plugin does not do any focus management, it only handles state, and triggers an event on state change. Autowrap is set to false by default.</p>
                 <p>This plugin consolidates common functionality and state of jquery-roving-tabindex and jquery-active-descendant. You probably don't need to use this plugin directly.</p>
                 <p>NOTE: This plugin does not require that keyboard focus go on the container of the items, it can go on any focusable element such as a textbox.</p>
             </section>
             <section id="examples">
                 <div class="widget" tabindex="0">
                     <ul>
-                        <li>Item 1</li>
-                        <li>Item 2</li>
-                        <li>Item 3</li>
+                        <li>Widget Item 1</li>
+                        <li>Widget Item 2</li>
+                        <li>Widget Item 3</li>
                     </ul>
                 </div>
                 <textarea readonly disabled></textarea>
@@ -52,9 +52,7 @@
         <script>
             $(function() {
                 var pluginOptions = {
-                    debug: true,
-                    autoInit: false,
-                    autoReset: false
+                    debug: true
                 };
 
                 $(".widget").linearNavigation('li', pluginOptions);
