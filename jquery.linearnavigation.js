@@ -62,13 +62,13 @@
                 };
 
                 var resetModel = function() {
-                    $($collection.get(currentItemIndex)).trigger("linearNavigationReset", {fromIndex: currentItemIndex, toIndex: null});
+                    $($collection.get(currentItemIndex)).trigger('linearNavigationReset', {fromIndex: currentItemIndex, toIndex: null});
                     currentItemIndex = null;
                 };
 
                 var initModel = function() {
                     if (currentItemIndex !== options.activeIndex) {
-                        $($collection.get(options.activeIndex)).trigger("linearNavigationInit", {fromIndex: currentItemIndex, toIndex: options.activeIndex});
+                        $($collection.get(options.activeIndex)).trigger('linearNavigationInit', {fromIndex: currentItemIndex, toIndex: options.activeIndex});
                         currentItemIndex = options.activeIndex;
                     }
                 };
@@ -86,7 +86,7 @@
 
                 var updateModel = function(goToIndex) {
                     if (goToIndex !== currentItemIndex) {
-                        $($collection.get(goToIndex)).trigger("linearNavigationChange", {fromIndex: currentItemIndex, toIndex: goToIndex});
+                        $($collection.get(goToIndex)).trigger('linearNavigationChange', {fromIndex: currentItemIndex, toIndex: goToIndex});
                         currentItemIndex = goToIndex;
                     }
                 };
