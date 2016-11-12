@@ -51,11 +51,9 @@
         <script src="browser.js"></script>
         <script>
             $(function() {
-                var pluginOptions = {
+                $(".widget").linearNavigation('li', {
                     debug: true
-                };
-
-                $(".widget").linearNavigation('li', pluginOptions);
+                });
 
                 $(".widget").on('linearNavigationInit linearNavigationChange linearNavigationReset', 'li', function(e, data) {
                     console.log(e.type, e, data);
@@ -64,7 +62,7 @@
 
                 $('button#append-items').on('click', function() {
                     $('.widget ul').append('<li role="option">Option n</li>');
-                    $(".widget").trigger('linearNavigationItemsChange');
+                    $(".widget").trigger('domChange');
                 })
             });
         </script>

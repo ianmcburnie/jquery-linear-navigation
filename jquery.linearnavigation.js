@@ -1,7 +1,7 @@
 /**
 * @file jQuery collection plugin that implements the events and model for one-dimensional keyboard navigation
 * @author Ian McBurnie <ianmcburnie@hotmail.com>
-* @version 0.2.1
+* @version 0.3.0
 * @requires jquery
 * @requires jquery-common-keydown
 * @requires jquery-focus-exit
@@ -16,13 +16,15 @@
     * @param {string} [options.axis] - set arrow key axis to x, y or both (default: both)
     * @param {string} [options.activeIndex] - specify the initial active item by index position (default: 0)
     * @param {string} [options.autoInit] - initialise the model before a key is pressed (default: false)
+    * @param {string} [options.autoInitOnDomChange] - initialise the model when DOM changes (default: false)
     * @param {string} [options.autoReset] - reset the model when focus is lost (default: false)
     * @param {boolean} [options.autoWrap] - keyboard focus wraps from last to first & vice versa (default: false)
     * @param {boolean} [options.disableHomeAndEndKeys] - disable HOME and END key functionality (default: false)
     * @fires linearNavigationChange - when the current item changes
     * @fires linearNavigationReset - when the model resets
     * @fires linearNavigationInit - when the model inits
-    * @listens linearNavigationItemsChange - for changes to descendant items
+    * @fires linearNavigationItemsChange - when descendant items change
+    * @listens domChange - for changes to widget DOM
     * @return {Object} chainable jQuery class
     */
     $.fn.linearNavigation = function linearNavigation(itemsSelector, options) {
@@ -31,6 +33,7 @@
             axis: 'both',
             autoReset: false,
             autoInit: false,
+            autoInitOnDomChange: false,
             autoWrap: false,
             debug: false,
             disableHomeAndEndKeys: false
@@ -88,11 +91,17 @@
                     }
                 };
 
-                var onLinearNavigationItemsChange = function() {
+                var onDomChange = function(e) {
                     $collection = $widget.find(itemsSelector);
                     numItems = $collection.length;
-                    $.data(this, pluginName).length = numItems;
+
                     storeData();
+
+                    $widget.trigger('linearNavigationItemsChange');
+
+                    if (options.autoInitOnDomChange === true) {
+                        initModel();
+                    }
                 };
 
                 var onClick = function() {
@@ -104,7 +113,7 @@
                     if (needsInit()) {
                         initModel();
                     } else if (isShiftKeyDown === false) {
-                        var isOnLastEl = (currentItemIndex === jQuery.data(e.delegateTarget, pluginName).length - 1);
+                        var isOnLastEl = (currentItemIndex === numItems - 1);
                         var goToIndex = currentItemIndex;
 
                         if (currentItemIndex === null) {
@@ -133,7 +142,7 @@
                             goToIndex = options.activeIndex;
                         } else if (isOnFirstEl) {
                             if (options.autoWrap === true) {
-                                goToIndex = jQuery.data(e.delegateTarget, pluginName).length - 1;
+                                goToIndex = numItems - 1;
                             }
                         } else {
                             goToIndex = currentItemIndex - 1;
@@ -184,10 +193,10 @@
                     $widget.on('focusExit', onFocusExit);
                 }
 
-                $widget.on('linearNavigationItemsChange', onLinearNavigationItemsChange);
+                $widget.on('domChange', onDomChange);
 
                 // store data on bound element
-                jQuery.data(this, pluginName, {installed: 'true', length: numItems});
+                jQuery.data(this, pluginName, {installed: 'true'});
 
                 // we can set the intial active descendant if arrow key not required
                 if (options.autoInit === true) {
