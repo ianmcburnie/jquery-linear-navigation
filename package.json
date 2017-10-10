@@ -38,13 +38,12 @@
   "devDependencies": {
     "browser-sync": "^2",
     "coveralls": "^2",
-    "eslint": "^3.0.0",
-    "eslint-config-google": "~0.7",
+    "eslint": "^4",
+    "eslint-config-ebay": "~0.1",
     "jasmine-core": "^2",
     "jquery": ">=1.11",
     "jquery-common-keydown": "~0.3",
     "jquery-focus-exit": "~0.3",
-    "jquery-migrate": "^3",
     "jsdoc": "^3",
     "jsmin": "^1",
     "karma": "^1",
@@ -67,5 +66,6 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  }
+  },
+  "dependencies": {}
 }

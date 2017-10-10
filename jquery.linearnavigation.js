@@ -55,20 +55,28 @@
                 };
 
                 var storeData = function() {
-                    $collection.each(function onEachMatchedEl(index) {
+                    $collection.each(function onEach(index) {
                         // store index position on each collection item
-                        $.data(this, pluginName, {idx: index});
+                        $.data(this, pluginName, { idx: index });
                     });
                 };
 
                 var resetModel = function() {
-                    $($collection.get(currentItemIndex)).trigger('linearNavigationReset', {fromIndex: currentItemIndex, toIndex: null});
+                    $($collection.get(currentItemIndex))
+                        .trigger('linearNavigationReset', {
+                            fromIndex: currentItemIndex,
+                            toIndex: null
+                        });
                     currentItemIndex = null;
                 };
 
                 var initModel = function() {
                     if (currentItemIndex !== options.activeIndex) {
-                        $($collection.get(options.activeIndex)).trigger('linearNavigationInit', {fromIndex: currentItemIndex, toIndex: options.activeIndex});
+                        $($collection.get(options.activeIndex))
+                            .trigger('linearNavigationInit', {
+                                fromIndex: currentItemIndex,
+                                toIndex: options.activeIndex
+                            });
                         currentItemIndex = options.activeIndex;
                     }
                 };
@@ -86,12 +94,16 @@
 
                 var updateModel = function(goToIndex) {
                     if (goToIndex !== currentItemIndex) {
-                        $($collection.get(goToIndex)).trigger('linearNavigationChange', {fromIndex: currentItemIndex, toIndex: goToIndex});
+                        $($collection.get(goToIndex))
+                            .trigger('linearNavigationChange', {
+                                fromIndex: currentItemIndex,
+                                toIndex: goToIndex
+                            });
                         currentItemIndex = goToIndex;
                     }
                 };
 
-                var onDomChange = function(e) {
+                var onDomChange = function() {
                     $collection = $widget.find(itemsSelector);
                     numItems = $collection.length;
 
@@ -152,13 +164,13 @@
                     }
                 };
 
-                var onHomeKey = function(e) {
+                var onHomeKey = function() {
                     if (hasDoneInit()) {
                         updateModel(0);
                     }
                 };
 
-                var onEndKey = function(e) {
+                var onEndKey = function() {
                     if (hasDoneInit()) {
                         updateModel(numItems - 1);
                     }
@@ -196,7 +208,7 @@
                 $widget.on('domChange', onDomChange);
 
                 // store data on bound element
-                jQuery.data(this, pluginName, {installed: 'true'});
+                jQuery.data(this, pluginName, { installed: 'true' });
 
                 // we can set the intial active descendant if arrow key not required
                 if (options.autoInit === true) {
@@ -208,7 +220,8 @@
                 // store data on element
                 storeData();
             } else if (options.debug === true) {
-                console.log('debug: {pluginName} is already installed on {element}'.replace('{pluginName}', pluginName).replace('{element}', this));
+                console.log('debug: {pluginName} is already installed on {element}'.replace('{pluginName}', pluginName)
+                    .replace('{element}', this));
             }
         });
     };
