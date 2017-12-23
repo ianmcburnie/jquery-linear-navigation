@@ -104,6 +104,7 @@
                 };
 
                 var onDomChange = function() {
+                    currentItemIndex = null;
                     $collection = $widget.find(itemsSelector);
                     numItems = $collection.length;
 
