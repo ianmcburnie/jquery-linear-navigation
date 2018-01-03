@@ -112,6 +112,7 @@
                     $widget.trigger('linearNavigationItemsChange');
 
                     if (options.autoInitOnDomChange === true) {
+                        currentItemIndex = null;
                         initModel();
                     }
                 };
