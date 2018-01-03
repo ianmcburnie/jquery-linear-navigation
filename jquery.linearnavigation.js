@@ -104,7 +104,6 @@
                 };
 
                 var onDomChange = function() {
-                    currentItemIndex = null;
                     $collection = $widget.find(itemsSelector);
                     numItems = $collection.length;
 
@@ -113,6 +112,7 @@
                     $widget.trigger('linearNavigationItemsChange');
 
                     if (options.autoInitOnDomChange === true) {
+                        currentItemIndex = null;
                         initModel();
                     }
                 };
